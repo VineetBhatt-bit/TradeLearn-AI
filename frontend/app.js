@@ -133,6 +133,12 @@ const quizArea = document.getElementById("quizArea");
 const nextQuestionButton = document.getElementById("nextQuestion");
 const saveJournalButton = document.getElementById("saveJournal");
 const journalInput = document.getElementById("journalInput");
+const focusPanel = document.getElementById("focusPanel");
+const heroSection = document.getElementById("hero");
+const heroVisual = document.getElementById("heroVisual");
+const heroCopy = document.getElementById("heroCopy");
+const marketCard = document.getElementById("marketCard");
+const topbar = document.getElementById("topbar");
 
 const completedLessons = document.getElementById("completedLessons");
 const quizScore = document.getElementById("quizScore");
@@ -336,6 +342,107 @@ function setupRevealAnimations() {
   document.querySelectorAll(".reveal").forEach((element) => observer.observe(element));
 }
 
+function setupHeroEffects() {
+  if (!focusPanel || !heroSection || !heroVisual) {
+    return;
+  }
+
+  let ticking = false;
+
+  const syncHeroMotion = () => {
+    const heroRect = heroSection.getBoundingClientRect();
+    const heroHeight = Math.max(heroRect.height, 1);
+    const progress = Math.min(Math.max(-heroRect.top / heroHeight, 0), 1);
+    const clampedProgress = window.innerWidth <= 760 ? 0 : progress;
+
+    focusPanel.classList.toggle("is-active", clampedProgress < 0.32);
+    focusPanel.classList.toggle("is-dimming", clampedProgress >= 0.32);
+
+    if (topbar) {
+      topbar.classList.toggle("compact", window.scrollY > 24);
+    }
+
+    if (heroVisual) {
+      heroVisual.style.transform = `translate3d(0, ${clampedProgress * -26}px, 0)`;
+      heroVisual.style.opacity = String(1 - clampedProgress * 0.08);
+    }
+
+    if (heroCopy) {
+      const copyY = clampedProgress * -14;
+      const copyScale = 1 - clampedProgress * 0.025;
+      heroCopy.style.transform = `translate3d(0, ${copyY}px, 0) scale(${copyScale})`;
+      heroCopy.style.opacity = String(1 - clampedProgress * 0.18);
+    }
+
+    if (marketCard) {
+      const rotate = clampedProgress * -5;
+      const lift = clampedProgress * -30;
+      marketCard.style.transform = `translate3d(0, ${lift}px, 0) rotateX(${rotate}deg) scale(${1 - clampedProgress * 0.035})`;
+      marketCard.style.opacity = String(1 - clampedProgress * 0.14);
+    }
+  };
+
+  const requestSync = () => {
+    if (ticking) {
+      return;
+    }
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      syncHeroMotion();
+      ticking = false;
+    });
+  };
+
+  syncHeroMotion();
+  window.addEventListener("scroll", requestSync, { passive: true });
+  window.addEventListener("resize", requestSync);
+}
+
+function setupSectionDepth() {
+  const panels = document.querySelectorAll(".path-card, .module-card, .simulator, .quiz-card, .dashboard-panel, .stat-card");
+
+  if (!panels.length) {
+    return;
+  }
+
+  let ticking = false;
+
+  const syncDepth = () => {
+    const viewportHeight = window.innerHeight || 1;
+
+    panels.forEach((panel) => {
+      if (window.innerWidth <= 760) {
+        panel.style.transform = "";
+        return;
+      }
+
+      const rect = panel.getBoundingClientRect();
+      const center = rect.top + rect.height / 2;
+      const distance = Math.abs(viewportHeight / 2 - center);
+      const normalized = Math.min(distance / viewportHeight, 1);
+      const lift = (1 - normalized) * -8;
+      const scale = 0.985 + (1 - normalized) * 0.02;
+
+      panel.style.transform = `translate3d(0, ${lift}px, 0) scale(${scale})`;
+    });
+  };
+
+  const requestSync = () => {
+    if (ticking) {
+      return;
+    }
+    ticking = true;
+    window.requestAnimationFrame(() => {
+      syncDepth();
+      ticking = false;
+    });
+  };
+
+  syncDepth();
+  window.addEventListener("scroll", requestSync, { passive: true });
+  window.addEventListener("resize", requestSync);
+}
+
 function registerServiceWorker() {
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js").catch(() => {});
@@ -351,4 +458,6 @@ populateScenarios();
 renderQuestion();
 restoreState();
 setupRevealAnimations();
+setupHeroEffects();
+setupSectionDepth();
 registerServiceWorker();

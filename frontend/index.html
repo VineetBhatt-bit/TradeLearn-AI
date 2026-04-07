@@ -22,7 +22,7 @@
   </head>
   <body>
     <div class="app-shell">
-      <header class="topbar glass">
+      <header class="topbar glass" id="topbar">
         <a class="brand" href="#hero">
           <span class="brand-mark"></span>
           <span>
@@ -40,7 +40,7 @@
 
       <main>
         <section class="hero section" id="hero">
-          <div class="hero-copy reveal">
+          <div class="hero-copy reveal" id="heroCopy">
             <p class="eyebrow">Beginner to Advanced Trading Mastery</p>
             <h1>Build market confidence with lessons, live-style practice, and a learner-first vibe.</h1>
             <p class="hero-text">
@@ -67,8 +67,10 @@
             </div>
           </div>
 
-          <div class="hero-visual reveal delay-1">
-            <div class="market-card glass floating">
+          <div class="hero-visual reveal delay-1" id="heroVisual">
+            <div class="hero-orb hero-orb-one"></div>
+            <div class="hero-orb hero-orb-two"></div>
+            <div class="market-card glass" id="marketCard">
               <div class="market-header">
                 <div>
                   <p>Learning Pulse</p>
@@ -92,7 +94,7 @@
               </div>
             </div>
 
-            <div class="mini-panel glass floating delay-float">
+            <div class="mini-panel glass delay-float" id="focusPanel">
               <p>Today’s Focus</p>
               <strong>Support & Resistance</strong>
               <small>Learn how price reacts near key levels and test it in the simulator.</small>
