@@ -31,8 +31,9 @@ TradeLearn AI is a responsive trading education platform designed for beginners 
 Use any static server. For example:
 
 ```bash
-cd frontend
 python3 -m http.server 4173
 ```
 
 Then open `http://localhost:4173`.
+
+The root URL automatically redirects to `frontend/`, so you can run the server from the repository root.
