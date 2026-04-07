@@ -10,3 +10,8 @@ Planned responsibilities:
 - Trading journal persistence
 - Admin content management
 - Market data and simulator APIs
+
+Current scaffold:
+
+- `api/README.md` - backend module plan and example routes
+- `api/src/server.js` - minimal Node HTTP server scaffold for health and overview endpoints

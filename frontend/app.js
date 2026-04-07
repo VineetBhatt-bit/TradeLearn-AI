@@ -117,15 +117,95 @@ const scenarios = [
   }
 ];
 
+const tracks = [
+  {
+    audience: "New to Markets",
+    title: "Beginner Blueprint",
+    duration: "4 Weeks",
+    summary: "Build core trading literacy, chart confidence, and a safe practice routine before you think about advanced setups.",
+    milestones: ["Market basics", "Chart reading", "Risk rules", "First simulator journal"]
+  },
+  {
+    audience: "Part-Time Learners",
+    title: "Swing Trading Path",
+    duration: "6 Weeks",
+    summary: "Focus on higher-timeframe setups, patience, trade planning, and risk-managed swing decisions.",
+    milestones: ["Daily and 4H structure", "Entries and exits", "Watchlist discipline", "Review cycles"]
+  },
+  {
+    audience: "Fast Execution",
+    title: "Scalping Foundations",
+    duration: "5 Weeks",
+    summary: "Study session timing, momentum, tighter risk, and decision speed without skipping discipline.",
+    milestones: ["Session timing", "Momentum cues", "Execution control", "Replay drills"]
+  }
+];
+
+const watchlistItems = [
+  {
+    symbol: "BTCUSD",
+    label: "Crypto Momentum",
+    detail: "Watch for trend continuation after pullbacks. Study volatility compression, breakout confirmation, and emotional discipline during fast candles."
+  },
+  {
+    symbol: "EURUSD",
+    label: "Forex Structure",
+    detail: "Use this pair to learn support, resistance, and session overlap behavior. Focus on patience and cleaner structure rather than excitement."
+  },
+  {
+    symbol: "AAPL",
+    label: "Equity Trend",
+    detail: "Great for learning trend channels, earnings-related volatility, and higher timeframe confluence around key zones."
+  }
+];
+
+const assessmentItems = [
+  {
+    type: "Level Check",
+    title: "Beginner Readiness Test",
+    badge: "12 Questions",
+    summary: "Confirm your understanding of trading terms, market sessions, position sizing, and basic chart behavior."
+  },
+  {
+    type: "Scenario Drill",
+    title: "Risk Manager Challenge",
+    badge: "Simulator",
+    summary: "Review three trading scenarios, choose a stop and target, and defend your risk model under pressure."
+  },
+  {
+    type: "Milestone",
+    title: "Consistency Certificate",
+    badge: "Unlockable",
+    summary: "Earn a certificate after completing lessons, finishing quizzes, and logging your first five guided practice sessions."
+  }
+];
+
+const mentorSuggestions = [
+  "Explain support and resistance like I'm a beginner.",
+  "How should I manage risk on my first trades?",
+  "What should I study before trying scalping?"
+];
+
+const notificationOptions = [
+  { id: "lesson_reminders", label: "Daily lesson reminder", active: true },
+  { id: "practice_prompt", label: "Practice lab prompt", active: true },
+  { id: "weekly_review", label: "Weekly review summary", active: false }
+];
+
 const storageKeys = {
   completed: "tradelearn-completed-modules",
   quiz: "tradelearn-quiz-stats",
   simulations: "tradelearn-simulation-count",
-  journal: "tradelearn-journal"
+  journal: "tradelearn-journal",
+  notifications: "tradelearn-notification-settings"
 };
 
 const moduleGrid = document.getElementById("moduleGrid");
 const moduleTemplate = document.getElementById("moduleTemplate");
+const trackGrid = document.getElementById("tracksGrid");
+const trackTemplate = document.getElementById("trackTemplate");
+const assessmentGrid = document.getElementById("assessmentGrid");
+const assessmentTemplate = document.getElementById("assessmentTemplate");
 const scenarioSelect = document.getElementById("scenarioSelect");
 const runSimulationButton = document.getElementById("runSimulation");
 const simResult = document.getElementById("simResult");
@@ -139,11 +219,20 @@ const heroVisual = document.getElementById("heroVisual");
 const heroCopy = document.getElementById("heroCopy");
 const marketCard = document.getElementById("marketCard");
 const topbar = document.getElementById("topbar");
+const mentorPresets = document.getElementById("mentorPresets");
+const mentorPrompt = document.getElementById("mentorPrompt");
+const askMentorButton = document.getElementById("askMentor");
+const mentorResponse = document.getElementById("mentorResponse");
+const watchlist = document.getElementById("watchlist");
+const watchDetail = document.getElementById("watchDetail");
+const notificationList = document.getElementById("notificationList");
 
 const completedLessons = document.getElementById("completedLessons");
 const quizScore = document.getElementById("quizScore");
 const simulationCount = document.getElementById("simulationCount");
 const progressFill = document.getElementById("progressFill");
+const currentStreak = document.getElementById("currentStreak");
+const readinessState = document.getElementById("readinessState");
 
 let quizIndex = 0;
 let quizAnswered = 0;
@@ -202,6 +291,43 @@ function renderModules() {
     });
 
     moduleGrid.appendChild(fragment);
+  });
+}
+
+function renderTracks() {
+  if (!trackGrid || !trackTemplate) {
+    return;
+  }
+
+  trackGrid.innerHTML = "";
+  tracks.forEach((track, index) => {
+    const fragment = trackTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".track-card");
+    fragment.querySelector(".track-audience").textContent = track.audience;
+    fragment.querySelector(".track-title").textContent = track.title;
+    fragment.querySelector(".track-duration").textContent = track.duration;
+    fragment.querySelector(".track-summary").textContent = track.summary;
+    fragment.querySelector(".track-milestones").innerHTML = track.milestones.map((item) => `<span>${item}</span>`).join("");
+    card.style.transitionDelay = `${index * 90}ms`;
+    trackGrid.appendChild(fragment);
+  });
+}
+
+function renderAssessments() {
+  if (!assessmentGrid || !assessmentTemplate) {
+    return;
+  }
+
+  assessmentGrid.innerHTML = "";
+  assessmentItems.forEach((item, index) => {
+    const fragment = assessmentTemplate.content.cloneNode(true);
+    const card = fragment.querySelector(".assessment-card");
+    fragment.querySelector(".assessment-type").textContent = item.type;
+    fragment.querySelector(".assessment-title").textContent = item.title;
+    fragment.querySelector(".assessment-badge").textContent = item.badge;
+    fragment.querySelector(".assessment-summary").textContent = item.summary;
+    card.style.transitionDelay = `${index * 90}ms`;
+    assessmentGrid.appendChild(fragment);
   });
 }
 
@@ -309,6 +435,14 @@ function updateDashboard() {
   quizScore.textContent = `${quizStats.answered ? Math.round((quizStats.correct / quizStats.answered) * 100) : 0}%`;
   simulationCount.textContent = String(simRuns);
   progressFill.style.width = `${overall}%`;
+
+  if (currentStreak) {
+    currentStreak.textContent = `${Math.max(3, completed + Math.min(simRuns, 4))} days`;
+  }
+
+  if (readinessState) {
+    readinessState.textContent = overall >= 75 ? "Advanced" : overall >= 45 ? "Developing" : "Building";
+  }
 }
 
 function restoreState() {
@@ -325,6 +459,140 @@ function saveJournal() {
   window.setTimeout(() => {
     saveJournalButton.textContent = "Save Journal";
   }, 1200);
+}
+
+function getMentorReply(prompt) {
+  const lowerPrompt = prompt.toLowerCase();
+
+  if (lowerPrompt.includes("support") || lowerPrompt.includes("resistance")) {
+    return {
+      title: "Support and Resistance",
+      body: "Support is an area where price has historically found buyers, while resistance is where sellers often step in. Think of them as reaction zones, not exact lines. Your job is to watch how price behaves there instead of assuming it must reverse.",
+      next: "Next lesson: Charts and Price Action"
+    };
+  }
+
+  if (lowerPrompt.includes("risk")) {
+    return {
+      title: "Risk Management",
+      body: "A beginner-friendly rule is to risk only 1% of your account on a single idea. Decide your stop-loss first, then size the trade so a loss stays small and repeatable. That protects you while you learn.",
+      next: "Next lesson: Risk Management"
+    };
+  }
+
+  if (lowerPrompt.includes("scalp")) {
+    return {
+      title: "Scalping Preparation",
+      body: "Before trying scalping, learn session timing, execution discipline, and fast stop placement. Scalping rewards preparation more than speed, so study clean setups and avoid trading every small move.",
+      next: "Recommended track: Scalping Foundations"
+    };
+  }
+
+  return {
+    title: "Trading Study Coach",
+    body: "Break the topic into three parts: what it is, why it matters, and how to practice it safely. Learn the idea in the academy, test it in the simulator, then write one insight in your journal so the lesson becomes a habit.",
+    next: "Recommended next step: complete one lesson and one simulator run"
+  };
+}
+
+function renderMentorPresets() {
+  if (!mentorPresets) {
+    return;
+  }
+
+  mentorPresets.innerHTML = mentorSuggestions
+    .map((suggestion, index) => `<button class="mentor-chip" data-index="${index}" type="button">${suggestion}</button>`)
+    .join("");
+
+  mentorPresets.querySelectorAll(".mentor-chip").forEach((button) => {
+    button.addEventListener("click", () => {
+      mentorPrompt.value = mentorSuggestions[Number(button.dataset.index)];
+    });
+  });
+}
+
+function askMentor() {
+  if (!mentorPrompt || !mentorResponse) {
+    return;
+  }
+
+  const prompt = mentorPrompt.value.trim();
+  if (!prompt) {
+    mentorResponse.innerHTML = "<p>Please ask a question so your mentor can guide you.</p>";
+    return;
+  }
+
+  const reply = getMentorReply(prompt);
+  mentorResponse.innerHTML = `
+    <h3>${reply.title}</h3>
+    <p>${reply.body}</p>
+    <p><strong>${reply.next}</strong></p>
+  `;
+}
+
+function renderWatchlist() {
+  if (!watchlist || !watchDetail) {
+    return;
+  }
+
+  watchlist.innerHTML = watchlistItems
+    .map(
+      (item, index) => `
+        <button class="watch-item" data-index="${index}" type="button">
+          <strong>${item.symbol}</strong>
+          <span>${item.label}</span>
+        </button>
+      `
+    )
+    .join("");
+
+  const updateSelected = (index) => {
+    const item = watchlistItems[index];
+    watchlist.querySelectorAll(".watch-item").forEach((button, buttonIndex) => {
+      button.classList.toggle("active", buttonIndex === index);
+    });
+    watchDetail.innerHTML = `
+      <h3>${item.symbol} Study Focus</h3>
+      <p>${item.detail}</p>
+      <p><strong>Observe:</strong> structure, volatility, confirmation, and your decision process.</p>
+    `;
+  };
+
+  watchlist.querySelectorAll(".watch-item").forEach((button) => {
+    button.addEventListener("click", () => updateSelected(Number(button.dataset.index)));
+  });
+
+  updateSelected(0);
+}
+
+function renderNotifications() {
+  if (!notificationList) {
+    return;
+  }
+
+  const stored = readJSON(storageKeys.notifications, notificationOptions);
+  notificationList.innerHTML = stored
+    .map(
+      (item, index) => `
+        <div class="notification-item">
+          <span>${item.label}</span>
+          <button class="toggle-pill ${item.active ? "active" : ""}" data-index="${index}" type="button">
+            ${item.active ? "Enabled" : "Disabled"}
+          </button>
+        </div>
+      `
+    )
+    .join("");
+
+  notificationList.querySelectorAll(".toggle-pill").forEach((button) => {
+    button.addEventListener("click", () => {
+      const settings = readJSON(storageKeys.notifications, notificationOptions);
+      const index = Number(button.dataset.index);
+      settings[index].active = !settings[index].active;
+      writeJSON(storageKeys.notifications, settings);
+      renderNotifications();
+    });
+  });
 }
 
 function setupRevealAnimations() {
@@ -452,11 +720,19 @@ function registerServiceWorker() {
 runSimulationButton.addEventListener("click", runSimulation);
 nextQuestionButton.addEventListener("click", nextQuestion);
 saveJournalButton.addEventListener("click", saveJournal);
+if (askMentorButton) {
+  askMentorButton.addEventListener("click", askMentor);
+}
 
 renderModules();
+renderTracks();
+renderAssessments();
 populateScenarios();
 renderQuestion();
 restoreState();
+renderMentorPresets();
+renderWatchlist();
+renderNotifications();
 setupRevealAnimations();
 setupHeroEffects();
 setupSectionDepth();

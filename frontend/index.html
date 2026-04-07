@@ -33,7 +33,9 @@
         <nav class="topnav">
           <a href="#roadmap">Roadmap</a>
           <a href="#academy">Academy</a>
+          <a href="#tracks">Tracks</a>
           <a href="#practice">Practice</a>
+          <a href="#mentor">Mentor</a>
           <a href="#dashboard">Progress</a>
         </nav>
       </header>
@@ -149,6 +151,14 @@
           <div class="module-grid" id="moduleGrid"></div>
         </section>
 
+        <section class="section" id="tracks">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Learning Tracks</p>
+            <h2>Follow a path built for your trading style, time horizon, and learning goals.</h2>
+          </div>
+          <div class="tracks-grid" id="tracksGrid"></div>
+        </section>
+
         <section class="section practice" id="practice">
           <div class="section-heading reveal">
             <p class="eyebrow">Practice Lab</p>
@@ -200,6 +210,51 @@
           </div>
         </section>
 
+        <section class="section" id="mentor">
+          <div class="section-heading reveal">
+            <p class="eyebrow">AI Mentor</p>
+            <h2>Ask beginner questions, get guided explanations, and receive your next learning step.</h2>
+          </div>
+          <div class="insight-layout">
+            <article class="dashboard-panel glass reveal">
+              <div class="card-head">
+                <div>
+                  <p>Study Assistant</p>
+                  <h3>Mentor Chat</h3>
+                </div>
+                <span class="badge">Beta</span>
+              </div>
+              <div class="mentor-presets" id="mentorPresets"></div>
+              <label class="mentor-input">
+                Ask anything about trading:
+                <textarea
+                  id="mentorPrompt"
+                  rows="4"
+                  placeholder="Example: Explain support and resistance like I'm a beginner."
+                ></textarea>
+              </label>
+              <button class="button primary full" id="askMentor">Ask Mentor</button>
+              <div class="result-card mentor-response" id="mentorResponse">
+                <p>Your mentor answer will appear here with a short explanation and a recommended next lesson.</p>
+              </div>
+            </article>
+
+            <article class="dashboard-panel glass reveal delay-1">
+              <div class="card-head">
+                <div>
+                  <p>Market Study Space</p>
+                  <h3>Watchlist and Session Notes</h3>
+                </div>
+                <span class="badge warm">Live Feel</span>
+              </div>
+              <div class="watchlist" id="watchlist"></div>
+              <div class="result-card watch-detail" id="watchDetail">
+                <p>Select a watchlist item to see the study plan, volatility notes, and what to observe.</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
         <section class="section dashboard" id="dashboard">
           <div class="section-heading reveal">
             <p class="eyebrow">Progress Dashboard</p>
@@ -230,6 +285,10 @@
               <div class="progress-bar">
                 <div id="progressFill"></div>
               </div>
+              <div class="profile-pills">
+                <span class="profile-pill">Current streak: <strong id="currentStreak">3 days</strong></span>
+                <span class="profile-pill">Readiness: <strong id="readinessState">Building</strong></span>
+              </div>
             </article>
 
             <article class="dashboard-panel glass reveal delay-1">
@@ -248,7 +307,76 @@
             </article>
           </div>
         </section>
+
+        <section class="section" id="assessments">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Assessments</p>
+            <h2>Measure your progress with level checks, scenario drills, and milestone certificates.</h2>
+          </div>
+          <div class="assessment-grid" id="assessmentGrid"></div>
+        </section>
+
+        <section class="section" id="ecosystem">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Platform Layers</p>
+            <h2>Everything needed to turn this into a full trading education product.</h2>
+          </div>
+          <div class="ecosystem-grid">
+            <article class="dashboard-panel glass reveal">
+              <div class="card-head">
+                <div>
+                  <p>Profiles and Access</p>
+                  <h3>Auth Experience</h3>
+                </div>
+              </div>
+              <ul class="feature-list">
+                <li>Google, email, and Apple sign-in</li>
+                <li>Saved progress across devices</li>
+                <li>Streaks, achievements, and badges</li>
+              </ul>
+            </article>
+            <article class="dashboard-panel glass reveal delay-1">
+              <div class="card-head">
+                <div>
+                  <p>Community Layer</p>
+                  <h3>Peer Learning</h3>
+                </div>
+              </div>
+              <ul class="feature-list">
+                <li>Study groups and trade review rooms</li>
+                <li>Leaderboards and weekly challenges</li>
+                <li>Mentor office hours and shared journals</li>
+              </ul>
+            </article>
+            <article class="dashboard-panel glass reveal delay-2">
+              <div class="card-head">
+                <div>
+                  <p>Creator Tools</p>
+                  <h3>Admin and CMS</h3>
+                </div>
+              </div>
+              <ul class="feature-list">
+                <li>Lesson editor and quiz builder</li>
+                <li>Simulator scenario manager</li>
+                <li>Notifications, spotlight modules, and analytics</li>
+              </ul>
+            </article>
+          </div>
+          <div class="notification-panel glass reveal">
+            <div class="card-head">
+              <div>
+                <p>Notification Center</p>
+                <h3>Choose your nudges</h3>
+              </div>
+            </div>
+            <div class="notification-list" id="notificationList"></div>
+          </div>
+        </section>
       </main>
+
+      <footer class="site-footer">
+        <p>TradeLearn AI is evolving into a full learning platform with lessons, practice, profiles, AI guidance, and backend-powered progress sync.</p>
+      </footer>
     </div>
 
     <template id="moduleTemplate">
@@ -260,6 +388,34 @@
         <h3 class="module-title"></h3>
         <p class="module-summary"></p>
         <div class="lesson-points"></div>
+      </article>
+    </template>
+
+    <template id="trackTemplate">
+      <article class="track-card glass reveal">
+        <div class="card-head">
+          <div>
+            <p class="track-audience"></p>
+            <h3 class="track-title"></h3>
+          </div>
+          <span class="badge track-duration"></span>
+        </div>
+        <p class="track-summary"></p>
+        <div class="track-milestones"></div>
+      </article>
+    </template>
+
+    <template id="assessmentTemplate">
+      <article class="assessment-card glass reveal">
+        <div class="card-head">
+          <div>
+            <p class="assessment-type"></p>
+            <h3 class="assessment-title"></h3>
+          </div>
+          <span class="badge assessment-badge"></span>
+        </div>
+        <p class="assessment-summary"></p>
+        <button class="button secondary full" type="button">Preview Challenge</button>
       </article>
     </template>
 

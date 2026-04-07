@@ -1,6 +1,6 @@
 # TradeLearn AI
 
-TradeLearn AI is a responsive trading education platform designed for beginners through advanced learners. It combines lesson-based learning, quizzes, a paper trading simulator, progress tracking, and a journal into a single installable web experience.
+TradeLearn AI is a responsive trading education platform designed for beginners through advanced learners. It now includes lesson-based learning, specialized learning tracks, quizzes, a paper trading simulator, a mentor assistant, watchlist study tools, assessment previews, progress tracking, and backend scaffolding for a fuller product build.
 
 ## Repository Structure
 
@@ -11,9 +11,14 @@ TradeLearn AI is a responsive trading education platform designed for beginners 
 
 - Beginner to advanced trading roadmap
 - Interactive lesson modules
+- Specialized learning tracks
 - Checkpoint quizzes with instant feedback
 - Paper trading simulator with risk calculations
-- Progress dashboard and journal
+- AI mentor study assistant
+- Watchlist study panel and notification toggles
+- Progress dashboard, streaks, and journal
+- Assessment and certificate previews
+- Backend API scaffold for future productization
 - Responsive UI for desktop, tablet, and mobile
 - PWA support via manifest and service worker
 
@@ -24,7 +29,9 @@ TradeLearn AI is a responsive trading education platform designed for beginners 
 - `frontend/app.js` - lessons, quiz logic, simulator, and local progress state
 - `frontend/manifest.webmanifest` - installable app metadata
 - `frontend/sw.js` - offline cache support
-- `backend/README.md` - backend planning placeholder
+- `backend/README.md` - backend planning overview
+- `backend/api/README.md` - API module plan and example endpoints
+- `backend/api/src/server.js` - lightweight backend scaffold
 
 ## Run Locally
 
@@ -37,3 +44,11 @@ python3 -m http.server 4173
 Then open `http://localhost:4173`.
 
 The root URL automatically redirects to `frontend/`, so you can run the server from the repository root.
+
+## Optional backend scaffold run
+
+```bash
+node backend/api/src/server.js
+```
+
+Then open `http://localhost:8080/api/health`.

@@ -491,7 +491,11 @@ textarea {
 .roadmap-grid,
 .module-grid,
 .dashboard-layout,
-.practice-layout {
+.practice-layout,
+.tracks-grid,
+.insight-layout,
+.assessment-grid,
+.ecosystem-grid {
   display: grid;
   gap: 20px;
 }
@@ -533,9 +537,70 @@ textarea {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.tracks-grid,
+.assessment-grid,
+.ecosystem-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.insight-layout {
+  grid-template-columns: 0.95fr 1.05fr;
+}
+
 .module-card {
   display: grid;
   gap: 16px;
+}
+
+.track-card,
+.assessment-card {
+  padding: 24px;
+  border-radius: var(--radius-xl);
+}
+
+.track-card,
+.assessment-card,
+.notification-panel {
+  transition:
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 260ms ease,
+    box-shadow 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.track-card:hover,
+.assessment-card:hover,
+.notification-panel:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(143, 247, 211, 0.24);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.38);
+}
+
+.track-summary,
+.assessment-summary {
+  color: #d5ece8;
+  line-height: 1.7;
+}
+
+.track-milestones,
+.feature-list,
+.notification-list {
+  display: grid;
+  gap: 10px;
+}
+
+.track-milestones span,
+.profile-pill,
+.feature-list li,
+.notification-item,
+.mentor-chip,
+.watch-item {
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(143, 247, 211, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.track-milestones span {
+  padding: 12px 14px;
 }
 
 .module-title {
@@ -632,6 +697,114 @@ textarea {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.profile-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.profile-pill {
+  padding: 10px 12px;
+  color: var(--muted);
+}
+
+.profile-pill strong {
+  color: var(--text);
+}
+
+.mentor-presets,
+.watchlist,
+.notification-list {
+  display: grid;
+  gap: 12px;
+}
+
+.mentor-presets {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 18px 0;
+}
+
+.mentor-chip,
+.watch-item,
+.notification-item {
+  width: 100%;
+  padding: 14px 16px;
+  color: var(--text);
+}
+
+.mentor-chip,
+.watch-item {
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    background 220ms ease;
+}
+
+.mentor-chip:hover,
+.watch-item:hover,
+.watch-item.active {
+  transform: translateY(-2px);
+  border-color: rgba(143, 247, 211, 0.26);
+  background: rgba(143, 247, 211, 0.08);
+}
+
+.mentor-input {
+  display: grid;
+  gap: 8px;
+}
+
+.mentor-response,
+.watch-detail {
+  min-height: 180px;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+}
+
+.feature-list li {
+  padding: 14px 16px;
+}
+
+.notification-panel {
+  padding: 24px;
+  border-radius: var(--radius-xl);
+  margin-top: 20px;
+}
+
+.notification-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.toggle-pill {
+  min-width: 64px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(143, 247, 211, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.toggle-pill.active {
+  background: rgba(143, 247, 211, 0.18);
+  color: var(--accent);
+}
+
+.site-footer {
+  padding: 28px 0 16px;
+  color: var(--muted);
+  text-align: center;
+}
+
 .progress-metrics {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -719,7 +892,11 @@ textarea {
   .practice-layout,
   .dashboard-layout,
   .module-grid,
-  .roadmap-grid {
+  .roadmap-grid,
+  .tracks-grid,
+  .insight-layout,
+  .assessment-grid,
+  .ecosystem-grid {
     grid-template-columns: 1fr;
   }
 
@@ -763,7 +940,8 @@ textarea {
   .topnav,
   .hero-stats,
   .progress-metrics,
-  .sim-controls {
+  .sim-controls,
+  .mentor-presets {
     grid-template-columns: 1fr;
   }
 
