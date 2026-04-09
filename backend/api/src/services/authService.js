@@ -1,24 +1,57 @@
-function createDemoUser(payload = {}) {
+const { getPrisma } = require("../config/db");
+
+async function loginUser(payload = {}) {
+  const prisma = getPrisma();
+  const email = (payload.email || "").trim().toLowerCase();
+
+  if (!email) {
+    return {
+      error: "Email is required to log in."
+    };
+  }
+
+  const user = await prisma.user.findUnique({ where: { email } });
+
+  if (!user) {
+    return {
+      error: "User not found. Register first."
+    };
+  }
+
   return {
-    id: "demo-user-001",
-    name: payload.name || "Vineet Trader",
-    email: payload.email || "vineet@example.com",
-    plan: "learner-pro"
+    user,
+    token: `session-${user.id}`,
+    message: "Login successful."
   };
 }
 
-function loginUser(payload = {}) {
-  return {
-    user: createDemoUser(payload),
-    token: "demo-session-token",
-    message: "Demo login successful. Real auth will be added in the next auth phase."
-  };
-}
+async function registerUser(payload = {}) {
+  const prisma = getPrisma();
+  const email = (payload.email || "").trim().toLowerCase();
+  const name = (payload.name || "TradeLearn User").trim();
 
-function registerUser(payload = {}) {
+  if (!email) {
+    return {
+      error: "Email is required to register."
+    };
+  }
+
+  const user = await prisma.user.upsert({
+    where: { email },
+    update: {
+      name,
+      plan: payload.plan || "learner"
+    },
+    create: {
+      email,
+      name,
+      plan: payload.plan || "learner"
+    }
+  });
+
   return {
-    user: createDemoUser(payload),
-    message: "Demo account created. Database persistence will be added in the Prisma phase."
+    user,
+    message: "Account saved successfully."
   };
 }
 

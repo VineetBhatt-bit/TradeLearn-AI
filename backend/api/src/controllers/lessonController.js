@@ -1,8 +1,9 @@
 const { getLessons } = require("../services/lessonService");
+const { sendJson } = require("../utils/sendJson");
 
-function lessonController(_request, response) {
-  response.writeHead(200, { "Content-Type": "application/json" });
-  response.end(JSON.stringify({ items: getLessons() }, null, 2));
+async function lessonController(_request, response) {
+  const items = await getLessons();
+  sendJson(response, 200, { items });
 }
 
 module.exports = { lessonController };

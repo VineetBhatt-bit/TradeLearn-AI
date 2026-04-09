@@ -4,12 +4,14 @@ const { sendJson } = require("../utils/sendJson");
 
 async function loginController(request, response) {
   const payload = await readJsonBody(request);
-  sendJson(response, 200, loginUser(payload));
+  const result = await loginUser(payload);
+  sendJson(response, result.error ? 404 : 200, result);
 }
 
 async function registerController(request, response) {
   const payload = await readJsonBody(request);
-  sendJson(response, 201, registerUser(payload));
+  const result = await registerUser(payload);
+  sendJson(response, result.error ? 400 : 201, result);
 }
 
 module.exports = { loginController, registerController };
