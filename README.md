@@ -4,7 +4,7 @@ TradeLearn AI is a responsive trading education platform designed for beginners 
 
 ## Repository Structure
 
-- `frontend/` - current responsive web app and PWA
+- `frontend/` - Next.js frontend app
 - `backend/` - reserved for future APIs, authentication, progress sync, and admin services
 
 ## Features
@@ -20,30 +20,33 @@ TradeLearn AI is a responsive trading education platform designed for beginners 
 - Assessment and certificate previews
 - Backend API scaffold for future productization
 - Responsive UI for desktop, tablet, and mobile
+- Next.js app-router scaffold
 - PWA support via manifest and service worker
 
 ## Project Structure
 
-- `frontend/index.html` - app structure and content
-- `frontend/styles.css` - visual design, layout, and animations
-- `frontend/app.js` - lessons, quiz logic, simulator, and local progress state
-- `frontend/manifest.webmanifest` - installable app metadata
-- `frontend/sw.js` - offline cache support
+- `frontend/app/layout.js` - Next.js root layout
+- `frontend/app/page.js` - homepage UI rendered through Next.js
+- `frontend/app/globals.css` - visual design, layout, and animations
+- `frontend/public/app.js` - client-side interactions and local progress state
+- `frontend/public/manifest.webmanifest` - installable app metadata
+- `frontend/public/sw.js` - offline cache support
+- `frontend/package.json` - frontend package scripts and dependencies
 - `backend/README.md` - backend planning overview
 - `backend/api/README.md` - API module plan and example endpoints
 - `backend/api/src/server.js` - lightweight backend scaffold
 
-## Run Locally
+## Run Frontend Locally
 
-Use any static server. For example:
+Install dependencies and run the Next.js frontend:
 
 ```bash
-python3 -m http.server 4173
+cd frontend
+npm install
+npm run dev
 ```
 
-Then open `http://localhost:4173`.
-
-The root URL automatically redirects to `frontend/`, so you can run the server from the repository root.
+Then open `http://localhost:3000`.
 
 ## Optional backend scaffold run
 
