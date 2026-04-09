@@ -14,4 +14,8 @@ Planned responsibilities:
 Current scaffold:
 
 - `api/README.md` - backend module plan and example routes
-- `api/src/server.js` - minimal Node HTTP server scaffold for health and overview endpoints
+- `api/package.json` - backend scripts
+- `api/src/server.js` - backend server bootstrap
+- `api/src/routes` - route registry
+- `api/src/controllers` - request handlers
+- `api/src/services` - service layer
