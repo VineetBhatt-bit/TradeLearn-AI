@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  name        String
+  plan        String      @default("learner")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  progresses  Progress[]
+  journals    Journal[]
+}
+
+model Lesson {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  level       String
+  duration    String
+  createdAt   DateTime    @default(now())
+  progresses  Progress[]
+}
+
+model Progress {
+  id               String   @id @default(cuid())
+  userId           String
+  lessonId         String
+  completed        Boolean  @default(false)
+  quizAccuracy     Int      @default(0)
+  simulatorRuns    Int      @default(0)
+  streak           Int      @default(0)
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson           Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+}
+
+model Journal {
+  id          String   @id @default(cuid())
+  userId      String
+  content     String
+  tags        String?
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

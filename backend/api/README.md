@@ -5,6 +5,7 @@ This folder is the backend scaffold for the product version of TradeLearn AI.
 ## Current structure
 
 - `package.json` - backend scripts
+- `prisma/schema.prisma` - local database schema
 - `src/server.js` - HTTP server bootstrap
 - `src/config` - environment configuration
 - `src/routes` - route registry
@@ -35,10 +36,14 @@ This folder is the backend scaffold for the product version of TradeLearn AI.
 
 ## Current sample routes
 
+- `GET /`
 - `GET /api/health`
 - `GET /api/overview`
 - `GET /api/lessons`
 - `GET /api/progress`
+- `POST /api/auth/login`
+- `POST /api/auth/register`
+- `POST /api/progress`
 
 ## Planned next routes
 

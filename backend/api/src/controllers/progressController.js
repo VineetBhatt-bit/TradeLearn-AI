@@ -1,8 +1,14 @@
-const { getProgressSnapshot } = require("../services/progressService");
+const { getProgressSnapshot, updateProgressSnapshot } = require("../services/progressService");
+const { readJsonBody } = require("../utils/readJsonBody");
+const { sendJson } = require("../utils/sendJson");
 
 function progressController(_request, response) {
-  response.writeHead(200, { "Content-Type": "application/json" });
-  response.end(JSON.stringify(getProgressSnapshot(), null, 2));
+  sendJson(response, 200, getProgressSnapshot());
 }
 
-module.exports = { progressController };
+async function updateProgressController(request, response) {
+  const payload = await readJsonBody(request);
+  sendJson(response, 200, updateProgressSnapshot(payload));
+}
+
+module.exports = { progressController, updateProgressController };
