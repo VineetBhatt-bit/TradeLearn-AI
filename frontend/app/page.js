@@ -383,50 +383,6 @@ export default function HomePage() {
           backend-powered progress sync.
         </p>
       </footer>
-
-      <template id="moduleTemplate">
-        <article className="module-card glass reveal">
-          <div className="module-top">
-            <span className="module-level"></span>
-            <button className="module-toggle" type="button" aria-label="Mark lesson as complete">
-              Mark Complete
-            </button>
-          </div>
-          <h3 className="module-title"></h3>
-          <p className="module-summary"></p>
-          <div className="lesson-points"></div>
-        </article>
-      </template>
-
-      <template id="trackTemplate">
-        <article className="track-card glass reveal">
-          <div className="card-head">
-            <div>
-              <p className="track-audience"></p>
-              <h3 className="track-title"></h3>
-            </div>
-            <span className="badge track-duration"></span>
-          </div>
-          <p className="track-summary"></p>
-          <div className="track-milestones"></div>
-        </article>
-      </template>
-
-      <template id="assessmentTemplate">
-        <article className="assessment-card glass reveal">
-          <div className="card-head">
-            <div>
-              <p className="assessment-type"></p>
-              <h3 className="assessment-title"></h3>
-            </div>
-            <span className="badge assessment-badge"></span>
-          </div>
-          <p className="assessment-summary"></p>
-          <button className="button secondary full" type="button">
-            Preview Challenge
-          </button>
-        </article>
-      </template>
     </div>
   );
 }

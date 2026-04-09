@@ -201,11 +201,8 @@ const storageKeys = {
 };
 
 const moduleGrid = document.getElementById("moduleGrid");
-const moduleTemplate = document.getElementById("moduleTemplate");
 const trackGrid = document.getElementById("tracksGrid");
-const trackTemplate = document.getElementById("trackTemplate");
 const assessmentGrid = document.getElementById("assessmentGrid");
-const assessmentTemplate = document.getElementById("assessmentTemplate");
 const scenarioSelect = document.getElementById("scenarioSelect");
 const runSimulationButton = document.getElementById("runSimulation");
 const simResult = document.getElementById("simResult");
@@ -254,23 +251,38 @@ function getCompletedModules() {
   return readJSON(storageKeys.completed, []);
 }
 
+function createElement(tag, className, textContent) {
+  const element = document.createElement(tag);
+  if (className) {
+    element.className = className;
+  }
+  if (typeof textContent === "string") {
+    element.textContent = textContent;
+  }
+  return element;
+}
+
 function renderModules() {
   const completed = new Set(getCompletedModules());
   moduleGrid.innerHTML = "";
 
   modules.forEach((module, index) => {
-    const fragment = moduleTemplate.content.cloneNode(true);
-    const card = fragment.querySelector(".module-card");
-    const level = fragment.querySelector(".module-level");
-    const title = fragment.querySelector(".module-title");
-    const summary = fragment.querySelector(".module-summary");
-    const points = fragment.querySelector(".lesson-points");
-    const toggle = fragment.querySelector(".module-toggle");
+    const card = createElement("article", "module-card glass reveal");
+    const top = createElement("div", "module-top");
+    const level = createElement("span", "module-level", module.level);
+    const toggle = createElement("button", "module-toggle", "Mark Complete");
+    const title = createElement("h3", "module-title", module.title);
+    const summary = createElement("p", "module-summary", module.summary);
+    const points = createElement("div", "lesson-points");
 
-    level.textContent = module.level;
-    title.textContent = module.title;
-    summary.textContent = module.summary;
-    points.innerHTML = module.points.map((point) => `<p>${point}</p>`).join("");
+    toggle.type = "button";
+    toggle.setAttribute("aria-label", "Mark lesson as complete");
+    module.points.forEach((point) => {
+      points.appendChild(createElement("p", "", point));
+    });
+
+    top.append(level, toggle);
+    card.append(top, title, summary, points);
     card.style.transitionDelay = `${index * 80}ms`;
 
     if (completed.has(module.id)) {
@@ -290,44 +302,60 @@ function renderModules() {
       updateDashboard();
     });
 
-    moduleGrid.appendChild(fragment);
+    moduleGrid.appendChild(card);
   });
 }
 
 function renderTracks() {
-  if (!trackGrid || !trackTemplate) {
+  if (!trackGrid) {
     return;
   }
 
   trackGrid.innerHTML = "";
   tracks.forEach((track, index) => {
-    const fragment = trackTemplate.content.cloneNode(true);
-    const card = fragment.querySelector(".track-card");
-    fragment.querySelector(".track-audience").textContent = track.audience;
-    fragment.querySelector(".track-title").textContent = track.title;
-    fragment.querySelector(".track-duration").textContent = track.duration;
-    fragment.querySelector(".track-summary").textContent = track.summary;
-    fragment.querySelector(".track-milestones").innerHTML = track.milestones.map((item) => `<span>${item}</span>`).join("");
+    const card = createElement("article", "track-card glass reveal");
+    const head = createElement("div", "card-head");
+    const headCopy = createElement("div");
+    const audience = createElement("p", "track-audience", track.audience);
+    const title = createElement("h3", "track-title", track.title);
+    const duration = createElement("span", "badge track-duration", track.duration);
+    const summary = createElement("p", "track-summary", track.summary);
+    const milestones = createElement("div", "track-milestones");
+
+    track.milestones.forEach((item) => {
+      milestones.appendChild(createElement("span", "", item));
+    });
+
+    headCopy.append(audience, title);
+    head.append(headCopy, duration);
+    card.append(head, summary, milestones);
     card.style.transitionDelay = `${index * 90}ms`;
-    trackGrid.appendChild(fragment);
+    trackGrid.appendChild(card);
   });
 }
 
 function renderAssessments() {
-  if (!assessmentGrid || !assessmentTemplate) {
+  if (!assessmentGrid) {
     return;
   }
 
   assessmentGrid.innerHTML = "";
   assessmentItems.forEach((item, index) => {
-    const fragment = assessmentTemplate.content.cloneNode(true);
-    const card = fragment.querySelector(".assessment-card");
-    fragment.querySelector(".assessment-type").textContent = item.type;
-    fragment.querySelector(".assessment-title").textContent = item.title;
-    fragment.querySelector(".assessment-badge").textContent = item.badge;
-    fragment.querySelector(".assessment-summary").textContent = item.summary;
+    const card = createElement("article", "assessment-card glass reveal");
+    const head = createElement("div", "card-head");
+    const headCopy = createElement("div");
+    const type = createElement("p", "assessment-type", item.type);
+    const title = createElement("h3", "assessment-title", item.title);
+    const badge = createElement("span", "badge assessment-badge", item.badge);
+    const summary = createElement("p", "assessment-summary", item.summary);
+    const button = createElement("button", "button secondary full", "Preview Challenge");
+
+    button.type = "button";
+    headCopy.append(type, title);
+    head.append(headCopy, badge);
+    card.append(head, summary, button);
     card.style.transitionDelay = `${index * 90}ms`;
-    assessmentGrid.appendChild(fragment);
+    assessmentGrid.appendChild(card);
   });
 }
 
