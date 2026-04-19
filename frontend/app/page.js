@@ -15,6 +15,7 @@ export default function HomePage() {
           <a href="#tracks">Tracks</a>
           <a href="#practice">Practice</a>
           <a href="#mentor">Mentor</a>
+          <a href="#sync">Sync</a>
           <a href="#dashboard">Progress</a>
         </nav>
       </header>
@@ -307,6 +308,136 @@ export default function HomePage() {
               <button className="button primary full" id="saveJournal">
                 Save Journal
               </button>
+            </article>
+          </div>
+        </section>
+
+        <section className="section" id="sync">
+          <div className="section-heading reveal">
+            <p className="eyebrow">Sync Studio</p>
+            <h2>Connect the frontend to your backend, create an account, and sync progress and journals live.</h2>
+          </div>
+          <div className="sync-grid">
+            <article className="dashboard-panel glass reveal">
+              <div className="card-head">
+                <div>
+                  <p>Backend Link</p>
+                  <h3>API Connection</h3>
+                </div>
+                <span className="badge">Live</span>
+              </div>
+              <label className="mentor-input">
+                API Base URL
+                <input id="apiBaseUrl" type="text" defaultValue="http://localhost:8080" />
+              </label>
+              <div className="dual-actions">
+                <button className="button primary full" id="checkApiHealth">
+                  Check Health
+                </button>
+                <button className="button secondary full" id="loadApiLessons">
+                  Load Lessons
+                </button>
+              </div>
+              <div className="result-card api-status" id="apiStatus">
+                <p>Connect your frontend to the backend to verify health, load seeded lessons, and sync data.</p>
+              </div>
+            </article>
+
+            <article className="dashboard-panel glass reveal delay-1">
+              <div className="card-head">
+                <div>
+                  <p>User Access</p>
+                  <h3>Register or Login</h3>
+                </div>
+                <span className="badge warm">Persistent</span>
+              </div>
+              <div className="sync-form">
+                <label className="mentor-input">
+                  Name
+                  <input id="syncName" type="text" defaultValue="Vineet Bhatt" />
+                </label>
+                <label className="mentor-input">
+                  Email
+                  <input id="syncEmail" type="email" defaultValue="vineet@example.com" />
+                </label>
+              </div>
+              <div className="dual-actions">
+                <button className="button primary full" id="registerAccount">
+                  Register
+                </button>
+                <button className="button secondary full" id="loginAccount">
+                  Login
+                </button>
+              </div>
+              <div className="result-card api-status" id="authStatus">
+                <p>Create or load a user account backed by Prisma and SQLite.</p>
+              </div>
+            </article>
+
+            <article className="dashboard-panel glass reveal">
+              <div className="card-head">
+                <div>
+                  <p>Progress Sync</p>
+                  <h3>Save Learning State</h3>
+                </div>
+              </div>
+              <div className="sync-form">
+                <label className="mentor-input">
+                  Lesson
+                  <select id="progressLessonSlug">
+                    <option value="trading-foundations">Trading Foundations</option>
+                    <option value="charts-and-price-action">Charts and Price Action</option>
+                    <option value="risk-management">Risk Management</option>
+                  </select>
+                </label>
+                <label className="mentor-input">
+                  Quiz Accuracy
+                  <input id="progressQuizAccuracy" type="number" min="0" max="100" defaultValue="88" />
+                </label>
+                <label className="mentor-input">
+                  Simulator Runs
+                  <input id="progressSimulatorRuns" type="number" min="0" defaultValue="4" />
+                </label>
+                <label className="mentor-input">
+                  Streak
+                  <input id="progressStreak" type="number" min="0" defaultValue="5" />
+                </label>
+              </div>
+              <div className="dual-actions">
+                <button className="button primary full" id="saveRemoteProgress">
+                  Save Progress
+                </button>
+                <button className="button secondary full" id="loadRemoteProgress">
+                  Load Progress
+                </button>
+              </div>
+              <div className="result-card api-status" id="progressStatus">
+                <p>Persist progress to the backend and reload it into your dashboard snapshot.</p>
+              </div>
+            </article>
+
+            <article className="dashboard-panel glass reveal delay-1">
+              <div className="card-head">
+                <div>
+                  <p>Journal Sync</p>
+                  <h3>Save Reflections</h3>
+                </div>
+              </div>
+              <label className="mentor-input">
+                Tags
+                <input id="journalTags" type="text" placeholder="risk, mindset, execution" />
+              </label>
+              <div className="dual-actions">
+                <button className="button primary full" id="saveRemoteJournal">
+                  Save Journal Entry
+                </button>
+                <button className="button secondary full" id="loadRemoteJournal">
+                  Load Journal Entries
+                </button>
+              </div>
+              <div className="result-card api-status" id="journalStatus">
+                <p>Push the current journal text into the backend and review stored entries.</p>
+              </div>
             </article>
           </div>
         </section>

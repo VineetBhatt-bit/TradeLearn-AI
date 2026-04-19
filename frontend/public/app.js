@@ -197,7 +197,8 @@ const storageKeys = {
   quiz: "tradelearn-quiz-stats",
   simulations: "tradelearn-simulation-count",
   journal: "tradelearn-journal",
-  notifications: "tradelearn-notification-settings"
+  notifications: "tradelearn-notification-settings",
+  apiBaseUrl: "tradelearn-api-base-url"
 };
 
 const moduleGrid = document.getElementById("moduleGrid");
@@ -223,6 +224,26 @@ const mentorResponse = document.getElementById("mentorResponse");
 const watchlist = document.getElementById("watchlist");
 const watchDetail = document.getElementById("watchDetail");
 const notificationList = document.getElementById("notificationList");
+const apiBaseUrlInput = document.getElementById("apiBaseUrl");
+const checkApiHealthButton = document.getElementById("checkApiHealth");
+const loadApiLessonsButton = document.getElementById("loadApiLessons");
+const apiStatus = document.getElementById("apiStatus");
+const syncName = document.getElementById("syncName");
+const syncEmail = document.getElementById("syncEmail");
+const registerAccountButton = document.getElementById("registerAccount");
+const loginAccountButton = document.getElementById("loginAccount");
+const authStatus = document.getElementById("authStatus");
+const progressLessonSlug = document.getElementById("progressLessonSlug");
+const progressQuizAccuracy = document.getElementById("progressQuizAccuracy");
+const progressSimulatorRuns = document.getElementById("progressSimulatorRuns");
+const progressStreak = document.getElementById("progressStreak");
+const saveRemoteProgressButton = document.getElementById("saveRemoteProgress");
+const loadRemoteProgressButton = document.getElementById("loadRemoteProgress");
+const progressStatus = document.getElementById("progressStatus");
+const journalTags = document.getElementById("journalTags");
+const saveRemoteJournalButton = document.getElementById("saveRemoteJournal");
+const loadRemoteJournalButton = document.getElementById("loadRemoteJournal");
+const journalStatus = document.getElementById("journalStatus");
 
 const completedLessons = document.getElementById("completedLessons");
 const quizScore = document.getElementById("quizScore");
@@ -235,6 +256,18 @@ let quizIndex = 0;
 let quizAnswered = 0;
 let quizCorrect = 0;
 
+function getApiBaseUrl() {
+  const fallback = "http://localhost:8080";
+  const raw = (apiBaseUrlInput?.value || localStorage.getItem(storageKeys.apiBaseUrl) || fallback).trim();
+  return raw.replace(/\/+$/, "");
+}
+
+function persistApiBaseUrl() {
+  if (apiBaseUrlInput) {
+    localStorage.setItem(storageKeys.apiBaseUrl, apiBaseUrlInput.value.trim());
+  }
+}
+
 function readJSON(key, fallback) {
   try {
     return JSON.parse(localStorage.getItem(key)) ?? fallback;
@@ -245,6 +278,21 @@ function readJSON(key, fallback) {
 
 function writeJSON(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
+}
+
+async function apiRequest(path, options = {}) {
+  persistApiBaseUrl();
+
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    },
+    ...options
+  });
+
+  const data = await response.json();
+  return { ok: response.ok, data, status: response.status };
 }
 
 function getCompletedModules() {
@@ -478,6 +526,9 @@ function restoreState() {
   quizAnswered = quizStats.answered;
   quizCorrect = quizStats.correct;
   journalInput.value = localStorage.getItem(storageKeys.journal) || "";
+  if (apiBaseUrlInput) {
+    apiBaseUrlInput.value = localStorage.getItem(storageKeys.apiBaseUrl) || "http://localhost:8080";
+  }
   updateDashboard();
 }
 
@@ -623,6 +674,213 @@ function renderNotifications() {
   });
 }
 
+async function checkApiHealth() {
+  if (!apiStatus) {
+    return;
+  }
+
+  apiStatus.innerHTML = "<p>Checking API health...</p>";
+
+  try {
+    const result = await apiRequest("/api/health", { method: "GET" });
+    apiStatus.innerHTML = `
+      <h3>${result.data.service || "TradeLearn API"}</h3>
+      <p><strong>Status:</strong> ${result.data.status || result.status}</p>
+      <p>${result.data.message || "API responded successfully."}</p>
+    `;
+  } catch (error) {
+    apiStatus.innerHTML = `<p>Unable to reach the backend at ${getApiBaseUrl()}. ${error.message}</p>`;
+  }
+}
+
+async function loadApiLessons() {
+  if (!apiStatus || !progressLessonSlug) {
+    return;
+  }
+
+  apiStatus.innerHTML = "<p>Loading seeded lessons...</p>";
+
+  try {
+    const result = await apiRequest("/api/lessons", { method: "GET" });
+    if (!result.ok) {
+      apiStatus.innerHTML = `<p>Failed to load lessons. Status ${result.status}</p>`;
+      return;
+    }
+
+    const items = result.data.items || [];
+    progressLessonSlug.innerHTML = items
+      .map((lesson) => `<option value="${lesson.slug}">${lesson.title}</option>`)
+      .join("");
+
+    apiStatus.innerHTML = `
+      <h3>Lessons Loaded</h3>
+      <p>Loaded ${items.length} lessons from the backend.</p>
+      <p>${items.map((lesson) => lesson.title).join(", ")}</p>
+    `;
+  } catch (error) {
+    apiStatus.innerHTML = `<p>Unable to load lessons. ${error.message}</p>`;
+  }
+}
+
+async function registerAccount() {
+  if (!authStatus) {
+    return;
+  }
+
+  authStatus.innerHTML = "<p>Creating account...</p>";
+
+  try {
+    const result = await apiRequest("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify({
+        name: syncName?.value || "",
+        email: syncEmail?.value || ""
+      })
+    });
+
+    authStatus.innerHTML = result.ok
+      ? `<h3>${result.data.user.name}</h3><p>${result.data.user.email}</p><p>${result.data.message}</p>`
+      : `<p>${result.data.error || "Unable to register."}</p>`;
+  } catch (error) {
+    authStatus.innerHTML = `<p>Registration failed. ${error.message}</p>`;
+  }
+}
+
+async function loginAccount() {
+  if (!authStatus) {
+    return;
+  }
+
+  authStatus.innerHTML = "<p>Signing in...</p>";
+
+  try {
+    const result = await apiRequest("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: syncEmail?.value || ""
+      })
+    });
+
+    authStatus.innerHTML = result.ok
+      ? `<h3>${result.data.user.name}</h3><p>Session token: ${result.data.token}</p><p>${result.data.message}</p>`
+      : `<p>${result.data.error || "Unable to login."}</p>`;
+  } catch (error) {
+    authStatus.innerHTML = `<p>Login failed. ${error.message}</p>`;
+  }
+}
+
+async function saveRemoteProgress() {
+  if (!progressStatus) {
+    return;
+  }
+
+  progressStatus.innerHTML = "<p>Saving progress...</p>";
+
+  try {
+    const result = await apiRequest("/api/progress", {
+      method: "POST",
+      body: JSON.stringify({
+        name: syncName?.value || "",
+        email: syncEmail?.value || "",
+        lessonSlug: progressLessonSlug?.value || "",
+        completed: true,
+        quizAccuracy: Number(progressQuizAccuracy?.value || 0),
+        simulatorRuns: Number(progressSimulatorRuns?.value || 0),
+        streak: Number(progressStreak?.value || 0)
+      })
+    });
+
+    progressStatus.innerHTML = result.ok
+      ? `<h3>Progress Saved</h3><p>${result.data.message}</p><p>Lesson record updated successfully.</p>`
+      : `<p>${result.data.error || "Unable to save progress."}</p>`;
+  } catch (error) {
+    progressStatus.innerHTML = `<p>Progress sync failed. ${error.message}</p>`;
+  }
+}
+
+async function loadRemoteProgress() {
+  if (!progressStatus) {
+    return;
+  }
+
+  progressStatus.innerHTML = "<p>Loading progress...</p>";
+
+  try {
+    const email = encodeURIComponent(syncEmail?.value || "");
+    const result = await apiRequest(`/api/progress?email=${email}`, { method: "GET" });
+
+    if (!result.ok) {
+      progressStatus.innerHTML = `<p>${result.data.error || "Unable to load progress."}</p>`;
+      return;
+    }
+
+    if (typeof result.data.completedLessons === "number") {
+      completedLessons.textContent = String(result.data.completedLessons);
+      quizScore.textContent = `${result.data.quizAccuracy}%`;
+      simulationCount.textContent = String(result.data.simulatorRuns);
+      currentStreak.textContent = `${result.data.streak} days`;
+    }
+
+    progressStatus.innerHTML = `
+      <h3>Progress Loaded</h3>
+      <p>Completed lessons: ${result.data.completedLessons}</p>
+      <p>Quiz accuracy: ${result.data.quizAccuracy}%</p>
+      <p>Simulator runs: ${result.data.simulatorRuns}</p>
+    `;
+  } catch (error) {
+    progressStatus.innerHTML = `<p>Unable to load progress. ${error.message}</p>`;
+  }
+}
+
+async function saveRemoteJournal() {
+  if (!journalStatus) {
+    return;
+  }
+
+  journalStatus.innerHTML = "<p>Saving journal entry...</p>";
+
+  try {
+    const result = await apiRequest("/api/journal", {
+      method: "POST",
+      body: JSON.stringify({
+        name: syncName?.value || "",
+        email: syncEmail?.value || "",
+        content: journalInput?.value || "",
+        tags: journalTags?.value || ""
+      })
+    });
+
+    journalStatus.innerHTML = result.ok
+      ? `<h3>Journal Saved</h3><p>${result.data.message}</p><p>Entry id: ${result.data.journal.id}</p>`
+      : `<p>${result.data.error || "Unable to save journal entry."}</p>`;
+  } catch (error) {
+    journalStatus.innerHTML = `<p>Journal sync failed. ${error.message}</p>`;
+  }
+}
+
+async function loadRemoteJournal() {
+  if (!journalStatus) {
+    return;
+  }
+
+  journalStatus.innerHTML = "<p>Loading journal entries...</p>";
+
+  try {
+    const email = encodeURIComponent(syncEmail?.value || "");
+    const result = await apiRequest(`/api/journal?email=${email}`, { method: "GET" });
+    const items = result.data.items || [];
+
+    journalStatus.innerHTML = items.length
+      ? `<h3>Journal Entries</h3>${items
+          .slice(0, 3)
+          .map((item) => `<p><strong>${item.tags || "untagged"}:</strong> ${item.content}</p>`)
+          .join("")}`
+      : `<p>${result.data.message || "No journal entries found yet."}</p>`;
+  } catch (error) {
+    journalStatus.innerHTML = `<p>Unable to load journal entries. ${error.message}</p>`;
+  }
+}
+
 function setupRevealAnimations() {
   const observer = new IntersectionObserver(
     (entries) => {
@@ -750,6 +1008,30 @@ nextQuestionButton.addEventListener("click", nextQuestion);
 saveJournalButton.addEventListener("click", saveJournal);
 if (askMentorButton) {
   askMentorButton.addEventListener("click", askMentor);
+}
+if (checkApiHealthButton) {
+  checkApiHealthButton.addEventListener("click", checkApiHealth);
+}
+if (loadApiLessonsButton) {
+  loadApiLessonsButton.addEventListener("click", loadApiLessons);
+}
+if (registerAccountButton) {
+  registerAccountButton.addEventListener("click", registerAccount);
+}
+if (loginAccountButton) {
+  loginAccountButton.addEventListener("click", loginAccount);
+}
+if (saveRemoteProgressButton) {
+  saveRemoteProgressButton.addEventListener("click", saveRemoteProgress);
+}
+if (loadRemoteProgressButton) {
+  loadRemoteProgressButton.addEventListener("click", loadRemoteProgress);
+}
+if (saveRemoteJournalButton) {
+  saveRemoteJournalButton.addEventListener("click", saveRemoteJournal);
+}
+if (loadRemoteJournalButton) {
+  loadRemoteJournalButton.addEventListener("click", loadRemoteJournal);
 }
 
 renderModules();
