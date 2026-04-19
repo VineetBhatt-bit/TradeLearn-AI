@@ -7,12 +7,26 @@ const { sendJson } = require("./utils/sendJson");
 
 loadEnv();
 
+function applyCorsHeaders(response) {
+  response.setHeader("Access-Control-Allow-Origin", "*");
+  response.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  response.setHeader("Access-Control-Allow-Headers", "Content-Type");
+}
+
 function createRouteKey(request) {
   const pathname = new URL(request.url, "http://localhost").pathname;
   return `${request.method} ${pathname}`;
 }
 
 const server = http.createServer((request, response) => {
+  applyCorsHeaders(response);
+
+  if (request.method === "OPTIONS") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+
   const routeHandler = routes[createRouteKey(request)];
 
   if (routeHandler) {

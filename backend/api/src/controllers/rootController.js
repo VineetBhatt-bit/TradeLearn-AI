@@ -12,6 +12,7 @@ function rootController(_request, response) {
           health: "/api/health",
           overview: "/api/overview",
           lessons: "/api/lessons",
+          journal: "GET/POST /api/journal",
           progress: "/api/progress",
           login: "POST /api/auth/login",
           register: "POST /api/auth/register"
