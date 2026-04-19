@@ -1,0 +1,10 @@
+{
+  "name": "tradelearn-ai-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "zsh -c 'trap \"kill 0\" EXIT; (cd backend/api && npm run dev) & (cd frontend && npm run dev) & wait'",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend/api && npm run dev"
+  }
+}

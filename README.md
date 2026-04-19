@@ -91,3 +91,9 @@ npx prisma migrate dev --name init
 chmod +x scripts/run-local.sh
 ./scripts/run-local.sh
 ```
+
+Or use the workspace script:
+
+```bash
+npm run dev
+```
